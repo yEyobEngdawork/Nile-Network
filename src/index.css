@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Outfit", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-background: #0B0B0B;
+  --color-primary-blue: #0066FF;
+  --color-accent-blue: #00D1FF;
+  --color-glass: rgba(255, 255, 255, 0.03);
+  --color-glass-border: rgba(255, 255, 255, 0.1);
+}
+
+@layer base {
+  body {
+    @apply bg-background text-white font-sans antialiased selection:bg-primary-blue/30;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-linear-to-r from-white via-white to-gray-500;
+  }
+  
+  .blue-gradient {
+    @apply bg-linear-to-r from-primary-blue to-accent-blue;
+  }
+
+  .glass-card {
+    @apply bg-glass border border-glass-border backdrop-blur-xl rounded-2xl;
+  }
+
+  .glow-blue {
+    box-shadow: 0 0 20px rgba(0, 102, 255, 0.3);
+  }
+}
