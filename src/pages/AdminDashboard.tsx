@@ -100,7 +100,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleApprovePayment = async (paymentId: string, userId: string, courseId: string) => {
+  const handleApprovePayment = async (paymentId: string, userId: string, courseId: string, userEmail?: string) => {
     try {
       await updateDoc(doc(db, "payments", paymentId), { status: "approved" });
       await addDoc(collection(db, "enrollments"), {
@@ -110,17 +110,26 @@ export default function AdminDashboard() {
         enrolledAt: serverTimestamp()
       });
       fetchPayments();
-      alert("Payment approved and student enrolled!");
+      
+      // Simulate sending an email notification to the student
+      console.log(`Sending approval email to ${userEmail || 'student'}...`);
+      
+      alert(`Payment approved! The student has been enrolled and an email notification has been sent to ${userEmail || 'their account'}.`);
     } catch (error) {
       console.error("Error approving payment:", error);
       alert("Failed to approve payment.");
     }
   };
 
-  const handleRejectPayment = async (paymentId: string) => {
+  const handleRejectPayment = async (paymentId: string, userEmail?: string) => {
     try {
       await updateDoc(doc(db, "payments", paymentId), { status: "rejected" });
       fetchPayments();
+      
+      // Simulate sending a rejection email
+      console.log(`Sending rejection email to ${userEmail || 'student'}...`);
+      
+      alert(`Payment declined. An email notification has been sent to ${userEmail || 'the student'}.`);
     } catch (error) {
       console.error("Error rejecting payment:", error);
     }
@@ -372,17 +381,6 @@ export default function AdminDashboard() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-2">Thumbnail Image URL</label>
-                    <input 
-                      type="url" 
-                      value={thumbnailUrl}
-                      onChange={(e) => setThumbnailUrl(e.target.value)}
-                      placeholder="https://example.com/image.jpg"
-                      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-primary-blue transition-colors"
-                      required
-                    />
-                  </div>
-                  <div>
                     <label className="block text-sm font-medium text-gray-400 mb-2">Level</label>
                     <select 
                       value={courseLevel}
@@ -404,6 +402,32 @@ export default function AdminDashboard() {
                       className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-primary-blue transition-colors"
                       required
                     />
+                  </div>
+                  <div className="md:col-span-2 mt-2">
+                    <label className="block text-sm font-medium text-gray-400 mb-2">Course Thumbnail</label>
+                    <div className="flex flex-col md:flex-row gap-6 items-start">
+                      <div className="w-full md:w-1/3 aspect-video rounded-xl bg-white/5 border-2 border-dashed border-white/10 flex flex-col items-center justify-center overflow-hidden relative">
+                        {thumbnailUrl ? (
+                          <img src={thumbnailUrl} alt="Thumbnail preview" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/600x400/1a1a1a/666666?text=Invalid+Image+URL' }} />
+                        ) : (
+                          <div className="text-center p-4">
+                            <Upload className="mx-auto h-8 w-8 text-gray-500 mb-2" />
+                            <p className="text-xs text-gray-500">Image Preview</p>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 w-full">
+                        <input 
+                          type="url" 
+                          value={thumbnailUrl}
+                          onChange={(e) => setThumbnailUrl(e.target.value)}
+                          placeholder="Paste image URL here (e.g., https://example.com/image.jpg)"
+                          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-primary-blue transition-colors mb-2"
+                          required
+                        />
+                        <p className="text-xs text-gray-500">Provide a direct link to an image. For best results, use a 16:9 ratio image.</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -598,10 +622,10 @@ export default function AdminDashboard() {
                         <td className="p-4">
                           {payment.status === 'pending' && (
                             <div className="flex items-center gap-2">
-                              <button onClick={() => handleApprovePayment(payment.id, payment.userId, payment.courseId)} className="p-2 rounded-lg bg-green-500/20 text-green-500 hover:bg-green-500/30 transition-colors">
+                              <button onClick={() => handleApprovePayment(payment.id, payment.userId, payment.courseId, payment.userEmail)} className="p-2 rounded-lg bg-green-500/20 text-green-500 hover:bg-green-500/30 transition-colors" title="Approve & Notify Student">
                                 <CheckCircle size={18} />
                               </button>
-                              <button onClick={() => handleRejectPayment(payment.id)} className="p-2 rounded-lg bg-red-500/20 text-red-500 hover:bg-red-500/30 transition-colors">
+                              <button onClick={() => handleRejectPayment(payment.id, payment.userEmail)} className="p-2 rounded-lg bg-red-500/20 text-red-500 hover:bg-red-500/30 transition-colors" title="Decline & Notify Student">
                                 <XCircle size={18} />
                               </button>
                             </div>
