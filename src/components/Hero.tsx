@@ -24,10 +24,24 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-5xl md:text-8xl font-black tracking-tight leading-[0.9] mb-8 text-gradient"
+          className="text-5xl md:text-8xl font-black tracking-tight leading-[0.9] mb-8 text-gradient relative z-10"
         >
           LEARN SKILLS THAT <br />
-          <span className="text-primary-blue">ACTUALLY MAKE MONEY.</span>
+          <span className="text-primary-blue relative inline-block">
+            ACTUALLY MAKE MONEY.
+            <svg className="absolute w-[110%] h-auto -bottom-4 -left-[5%] text-accent-blue opacity-90 -z-10" viewBox="0 0 500 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 25 C 100 10, 300 5, 490 20 C 350 25, 200 30, 20 35 C 150 30, 350 20, 480 25" stroke="currentColor" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" className="animate-[dash_2s_ease-out_forwards]" strokeDasharray="1500" strokeDashoffset="1500"/>
+              <style>
+                {`
+                  @keyframes dash {
+                    to {
+                      stroke-dashoffset: 0;
+                    }
+                  }
+                `}
+              </style>
+            </svg>
+          </span>
         </motion.h1>
 
         <motion.p 

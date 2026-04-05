@@ -2,7 +2,7 @@ import { motion } from "motion/react";
 import { loginWithGoogle, loginWithEmail } from "../firebase";
 import { useAuth } from "../context/AuthContext";
 import { Navigate } from "react-router-dom";
-import { useState } from "react";
+import React, { useState } from "react";
 
 export default function Login() {
   const { user, userData, loading } = useAuth();
