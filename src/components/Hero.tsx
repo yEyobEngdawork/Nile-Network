@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { ArrowRight, Play, Users } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Hero() {
   return (
@@ -44,9 +45,9 @@ export default function Hero() {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto"
         >
-          <button className="w-full sm:w-auto px-8 py-5 rounded-2xl bg-white text-black font-black text-lg hover:scale-105 transition-transform flex items-center justify-center gap-2 glow-blue">
+          <Link to="/login" className="w-full sm:w-auto px-8 py-5 rounded-2xl bg-white text-black font-black text-lg hover:scale-105 transition-transform flex items-center justify-center gap-2 glow-blue">
             GET STARTED FREE <ArrowRight size={20} />
-          </button>
+          </Link>
           <button className="w-full sm:w-auto px-8 py-5 rounded-2xl bg-white/5 border border-white/10 text-white font-bold text-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2">
             <Play size={20} fill="white" /> WATCH DEMO
           </button>

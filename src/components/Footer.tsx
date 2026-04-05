@@ -2,7 +2,7 @@ import { Facebook, Twitter, Instagram, Linkedin, Github } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="py-20 px-6 border-t border-white/5">
+    <footer id="footer" className="py-20 px-6 border-t border-white/5">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-12 mb-20">
           <div className="col-span-2">
@@ -18,29 +18,29 @@ export default function Footer() {
           <div>
             <h4 className="font-bold mb-6 uppercase tracking-widest text-sm">Platform</h4>
             <ul className="space-y-4 text-gray-500 text-sm font-medium">
-              <li><a href="#" className="hover:text-white transition-colors">Courses</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Pathways</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Mentorship</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Nile Flow AI</a></li>
+              <li><a href="#courses" className="hover:text-white transition-colors">Courses</a></li>
+              <li><a href="#courses" className="hover:text-white transition-colors">Pathways</a></li>
+              <li><a href="#how-it-works" className="hover:text-white transition-colors">Mentorship</a></li>
+              <li><a href="#ai" className="hover:text-white transition-colors">Nile Flow AI</a></li>
             </ul>
           </div>
 
           <div>
             <h4 className="font-bold mb-6 uppercase tracking-widest text-sm">Company</h4>
             <ul className="space-y-4 text-gray-500 text-sm font-medium">
-              <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Success Stories</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
+              <li><a href="#how-it-works" className="hover:text-white transition-colors">About Us</a></li>
+              <li><a href="#social-proof" className="hover:text-white transition-colors">Success Stories</a></li>
+              <li><a href="#courses" className="hover:text-white transition-colors">Careers</a></li>
+              <li><a href="#footer" className="hover:text-white transition-colors">Contact</a></li>
             </ul>
           </div>
 
           <div>
             <h4 className="font-bold mb-6 uppercase tracking-widest text-sm">Legal</h4>
             <ul className="space-y-4 text-gray-500 text-sm font-medium">
-              <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Cookie Policy</a></li>
+              <li><a href="#footer" className="hover:text-white transition-colors">Privacy Policy</a></li>
+              <li><a href="#footer" className="hover:text-white transition-colors">Terms of Service</a></li>
+              <li><a href="#footer" className="hover:text-white transition-colors">Cookie Policy</a></li>
             </ul>
           </div>
 

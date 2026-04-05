@@ -1,0 +1,99 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+        (request.auth.token.email == "eyobengdawork1998@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function hasOnlyAllowedFields(allowedFields) {
+      return request.resource.data.keys().hasOnly(allowedFields);
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+    function isValidUser() {
+      let data = request.resource.data;
+      return hasOnlyAllowedFields(['uid', 'email', 'displayName', 'photoURL', 'role', 'createdAt']) &&
+             data.uid is string &&
+             data.email is string &&
+             data.role in ['student', 'admin'] &&
+             data.createdAt is timestamp;
+    }
+
+    function isValidCourse() {
+      let data = request.resource.data;
+      return data.title is string && data.title.size() > 0 && data.title.size() < 100 &&
+             data.price is number && data.price >= 0 &&
+             data.published is bool &&
+             data.createdAt is timestamp;
+    }
+
+    function isValidEnrollment() {
+      let data = request.resource.data;
+      return data.userId is string &&
+             data.courseId is string &&
+             data.progress is number && data.progress >= 0 && data.progress <= 100 &&
+             data.enrolledAt is timestamp;
+    }
+
+    function isValidPayment() {
+      let data = request.resource.data;
+      return data.userId is string &&
+             data.userEmail is string &&
+             data.courseId is string &&
+             (data.note is string ? data.note.size() <= 1000 : true) &&
+             data.status in ['pending', 'approved', 'rejected'] &&
+             data.createdAt is timestamp &&
+             data.screenshotUploaded is bool;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+    
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isAuthenticated() && isOwner(userId) && isValidUser() && 
+                    (request.resource.data.role == 'student' || isAdmin());
+      allow update: if isAuthenticated() && isValidUser() && 
+                    ((isOwner(userId) && request.resource.data.role == resource.data.role) || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    match /courses/{courseId} {
+      allow read: if resource.data.published == true || isAdmin();
+      allow create, update, delete: if isAdmin() && isValidCourse();
+    }
+
+    match /enrollments/{enrollmentId} {
+      allow read: if isOwner(resource.data.userId) || isAdmin();
+      allow create: if isOwner(request.resource.data.userId) && isValidEnrollment();
+      allow update: if isOwner(resource.data.userId) && isValidEnrollment() && 
+                    request.resource.data.userId == resource.data.userId &&
+                    request.resource.data.courseId == resource.data.courseId;
+      allow delete: if isAdmin();
+    }
+
+    match /payments/{paymentId} {
+      allow read: if isOwner(resource.data.userId) || isAdmin();
+      allow create: if isOwner(request.resource.data.userId) && isValidPayment() && request.resource.data.status == 'pending';
+      allow update: if isAdmin() && isValidPayment();
+      allow delete: if isAdmin();
+    }
+  }
+}

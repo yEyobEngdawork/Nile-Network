@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function FinalCTA() {
   return (
@@ -25,9 +26,9 @@ export default function FinalCTA() {
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-            <button className="w-full sm:w-auto px-12 py-6 rounded-2xl bg-white text-black font-black text-xl hover:scale-105 transition-transform flex items-center justify-center gap-2 glow-blue">
+            <Link to="/login" className="w-full sm:w-auto px-12 py-6 rounded-2xl bg-white text-black font-black text-xl hover:scale-105 transition-transform flex items-center justify-center gap-2 glow-blue">
               GET STARTED FREE <ArrowRight size={24} />
-            </button>
+            </Link>
             <p className="text-gray-500 font-medium">No credit card required. <br className="sm:hidden" /> Cancel anytime.</p>
           </div>
         </motion.div>

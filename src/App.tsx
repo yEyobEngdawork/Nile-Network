@@ -1,29 +1,21 @@
-import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
-import ProblemSolution from "./components/ProblemSolution";
-import ValueProp from "./components/ValueProp";
-import CourseSection from "./components/CourseSection";
-import HowItWorks from "./components/HowItWorks";
-import SocialProof from "./components/SocialProof";
-import NileFlowAI from "./components/NileFlowAI";
-import FinalCTA from "./components/FinalCTA";
-import Footer from "./components/Footer";
+import { Routes, Route } from "react-router-dom";
+import LandingPage from "./pages/LandingPage";
+import Login from "./pages/Login";
+import StudentDashboard from "./pages/StudentDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
+import CoursePlayer from "./pages/CoursePlayer";
+import Checkout from "./pages/Checkout";
 
 export default function App() {
   return (
-    <div className="min-h-screen selection:bg-primary-blue/30 overflow-x-hidden">
-      <Navbar />
-      <main>
-        <Hero />
-        <ProblemSolution />
-        <ValueProp />
-        <CourseSection />
-        <HowItWorks />
-        <NileFlowAI />
-        <SocialProof />
-        <FinalCTA />
-      </main>
-      <Footer />
-    </div>
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/dashboard" element={<StudentDashboard />} />
+      <Route path="/learn/:courseId" element={<CoursePlayer />} />
+      <Route path="/checkout/:courseId" element={<Checkout />} />
+      <Route path="/admin/*" element={<AdminDashboard />} />
+    </Routes>
   );
 }
+
