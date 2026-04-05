@@ -24,7 +24,9 @@ export default function CourseSection() {
 
   const fetchCourses = async () => {
     try {
-      const snapshot = await getDocs(collection(db, "courses"));
+      // Query must match the security rule: allow read: if resource.data.published == true
+      const q = query(collection(db, "courses"), where("published", "==", true));
+      const snapshot = await getDocs(q);
       const coursesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setCourses(coursesData);
     } catch (error) {

@@ -1,9 +1,10 @@
 import { useAuth } from "../context/AuthContext";
 import { Navigate, Link, useParams } from "react-router-dom";
-import { PlayCircle, CheckCircle2, FileText, ArrowLeft, MessageSquare, Award } from "lucide-react";
-import { useState, useEffect } from "react";
+import { PlayCircle, CheckCircle2, FileText, ArrowLeft, MessageSquare, Award, Sparkles, X, Send, Brain } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
+import { motion, AnimatePresence } from "motion/react";
 
 export default function CoursePlayer() {
   const { courseId } = useParams();
@@ -14,6 +15,39 @@ export default function CoursePlayer() {
   const [activeLesson, setActiveLesson] = useState<any>(null);
   const [activeModuleId, setActiveModuleId] = useState<string | null>(null);
   const [showCertificate, setShowCertificate] = useState(false);
+
+  // AI Chat State
+  const [isAIChatOpen, setIsAIChatOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState<{role: 'user'|'ai', text: string}[]>([
+    { role: 'ai', text: "Hi! I'm Nile Flow AI. What do you need help with in this lesson?" }
+  ]);
+  const [chatInput, setChatInput] = useState("");
+  const [isAITyping, setIsAITyping] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chatMessages, isAITyping, isAIChatOpen]);
+
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!chatInput.trim()) return;
+    
+    const newUserMsg = { role: 'user' as const, text: chatInput };
+    setChatMessages(prev => [...prev, newUserMsg]);
+    setChatInput("");
+    setIsAITyping(true);
+
+    setTimeout(() => {
+      setIsAITyping(false);
+      setChatMessages(prev => [...prev, { 
+        role: 'ai', 
+        text: `That's a great question about "${activeLesson?.title || 'this topic'}". Based on the curriculum, I recommend reviewing the core concepts we just covered. Would you like me to break it down further?` 
+      }]);
+    }, 1500);
+  };
 
   useEffect(() => {
     if (user && courseId) {
@@ -170,8 +204,12 @@ export default function CoursePlayer() {
                   <Award size={16} /> View Certificate
                 </button>
               )}
-              <button className="px-6 py-2 rounded-full bg-white/5 text-white font-bold text-sm hover:bg-white/10 transition-colors flex items-center gap-2">
-                <MessageSquare size={16} /> Ask Nile Flow AI
+              <button 
+                onClick={() => setIsAIChatOpen(true)}
+                className="px-6 py-2 rounded-full blue-gradient text-black font-bold text-sm hover:opacity-90 transition-all flex items-center gap-2 relative overflow-hidden group"
+              >
+                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform" />
+                <Sparkles size={16} className="animate-pulse" /> Ask Nile Flow AI
               </button>
             </div>
             
@@ -190,7 +228,7 @@ export default function CoursePlayer() {
         </main>
 
         {/* Sidebar Curriculum */}
-        <aside className="w-full lg:w-96 border-l border-white/5 bg-neutral-950/50 flex flex-col shrink-0 h-[50vh] lg:h-auto overflow-y-auto">
+        <aside className="w-full lg:w-96 border-l border-white/5 bg-neutral-950/50 flex flex-col shrink-0 h-[50vh] lg:h-auto overflow-y-auto relative">
           <div className="p-6 border-b border-white/5 sticky top-0 bg-neutral-950/90 backdrop-blur-md z-10">
             <h3 className="font-bold text-lg">Course Content</h3>
           </div>
@@ -258,6 +296,85 @@ export default function CoursePlayer() {
               </div>
             )}
           </div>
+
+          {/* AI Chat Panel Overlay */}
+          <AnimatePresence>
+            {isAIChatOpen && (
+              <motion.div 
+                initial={{ x: "100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "100%" }}
+                transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                className="absolute inset-0 bg-neutral-900 z-20 flex flex-col border-l border-accent-blue/30 shadow-[-10px_0_30px_rgba(0,198,255,0.1)]"
+              >
+                {/* Chat Header */}
+                <div className="p-4 border-b border-white/10 flex items-center justify-between bg-neutral-950/50">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full blue-gradient flex items-center justify-center">
+                      <Brain size={16} className="text-black" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-sm text-white">Nile Flow AI</h3>
+                      <p className="text-[10px] text-accent-blue flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-accent-blue animate-pulse" /> Online
+                      </p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => setIsAIChatOpen(false)}
+                    className="p-2 hover:bg-white/10 rounded-full transition-colors text-gray-400 hover:text-white"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+
+                {/* Chat Messages */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                  {chatMessages.map((msg, i) => (
+                    <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                      <div className={`max-w-[85%] p-3 rounded-2xl text-sm ${
+                        msg.role === 'user' 
+                          ? 'bg-primary-blue text-black rounded-br-sm' 
+                          : 'bg-white/10 text-gray-200 rounded-bl-sm border border-white/5'
+                      }`}>
+                        {msg.text}
+                      </div>
+                    </div>
+                  ))}
+                  {isAITyping && (
+                    <div className="flex justify-start">
+                      <div className="bg-white/10 border border-white/5 p-4 rounded-2xl rounded-bl-sm flex gap-1.5">
+                        <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0 }} className="w-1.5 h-1.5 bg-gray-400 rounded-full" />
+                        <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }} className="w-1.5 h-1.5 bg-gray-400 rounded-full" />
+                        <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.4 }} className="w-1.5 h-1.5 bg-gray-400 rounded-full" />
+                      </div>
+                    </div>
+                  )}
+                  <div ref={chatEndRef} />
+                </div>
+
+                {/* Chat Input */}
+                <div className="p-4 border-t border-white/10 bg-neutral-950/50">
+                  <form onSubmit={handleSendMessage} className="relative">
+                    <input 
+                      type="text" 
+                      value={chatInput}
+                      onChange={(e) => setChatInput(e.target.value)}
+                      placeholder="Ask about this lesson..."
+                      className="w-full bg-white/5 border border-white/10 rounded-full py-3 pl-4 pr-12 text-sm focus:outline-none focus:border-accent-blue/50 transition-colors"
+                    />
+                    <button 
+                      type="submit"
+                      disabled={!chatInput.trim() || isAITyping}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-accent-blue hover:bg-accent-blue/10 rounded-full transition-colors disabled:opacity-50 disabled:hover:bg-transparent"
+                    >
+                      <Send size={16} />
+                    </button>
+                  </form>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </aside>
       </div>
 
