@@ -1,15 +1,15 @@
 import { motion } from "motion/react";
 
 const partners = [
-  "Jehoachin Techno", 
-  "ACT", 
-  "Hilco", 
-  "Chapa", 
-  "CBE", 
-  "Safaricom", 
-  "ICT Park", 
-  "iCog Labs",
-  "Ashewa"
+  { name: "Jehoachin Techno", domain: "jehoachintechno.com" },
+  { name: "ACT", domain: "actamericancollege.com" },
+  { name: "Hilco", domain: "hilcoe.net" },
+  { name: "Chapa", domain: "chapa.co" },
+  { name: "CBE", domain: "combanketh.et" },
+  { name: "Safaricom", domain: "safaricom.et" },
+  { name: "ICT Park", domain: "ipdc.gov.et" },
+  { name: "iCog Labs", domain: "icog-labs.com" },
+  { name: "Ashewa", domain: "ashewa.com" }
 ];
 
 export default function Partners() {
@@ -33,12 +33,25 @@ export default function Partners() {
           className="flex whitespace-nowrap items-center gap-16 px-8"
         >
           {[...partners, ...partners, ...partners].map((partner, i) => (
-            <span 
+            <div 
               key={i} 
-              className="text-2xl md:text-3xl font-black text-gray-300 uppercase tracking-tighter hover:text-white transition-colors cursor-default"
+              className="flex items-center gap-4 group cursor-default"
             >
-              {partner}
-            </span>
+              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center overflow-hidden border border-white/5 group-hover:border-white/20 transition-colors shrink-0">
+                <img 
+                  src={`https://www.google.com/s2/favicons?domain=${partner.domain}&sz=128`} 
+                  alt={`${partner.name} logo`}
+                  className="w-6 h-6 object-contain"
+                  onError={(e) => {
+                    // Fallback if logo fails to load
+                    (e.target as HTMLImageElement).style.display = 'none';
+                  }}
+                />
+              </div>
+              <span className="text-2xl md:text-3xl font-black text-gray-300 uppercase tracking-tighter group-hover:text-white transition-colors">
+                {partner.name}
+              </span>
+            </div>
           ))}
         </motion.div>
       </div>
